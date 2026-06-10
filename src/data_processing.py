@@ -29,40 +29,40 @@ def regrid_height(ds, heights):
     )
     for var in ds.data_vars:
         da = ds[var]
-        if "height" in da.coords:
+        if "height" in da.dims:
             new_ds[var] = (
                 ("along_track", "height"), 
                 stratify.interpolate(
                     new_ds.height.values,
-                    da.height.fillna(-np.inf).values,
+                    ds.height.fillna(-np.inf).values,
                     da.values,
                     axis=1,
                     rising=False
                 )
             )
             new_ds[var] = new_ds[var].assign_attrs(ds[var].attrs)
-        elif "height_layer" in da.coords:
+        elif "height_layer" in da.dims:
             new_ds[var] = (
                 ("along_track", "height"), 
                 stratify.interpolate(
                     new_ds.height.values,
-                    da.height_layer.fillna(-np.inf).values,
+                    ds.height_layers.fillna(-np.inf).values,
                     da.values,
-                    axis=1,
+                    axis=-1,
                     rising=False
-                )
+                ).squeeze()
             )
             new_ds[var] = new_ds[var].assign_attrs(ds[var].attrs)
-        elif "height_level" in da.coords:
+        elif "height_level" in da.dims:
             new_ds[var] = (
                 ("along_track", "height"), 
                 stratify.interpolate(
                     new_ds.height.values,
-                    da.height_level.fillna(-np.inf).values,
+                    ds.height_levels.fillna(-np.inf).values,
                     da.values,
-                    axis=1,
+                    axis=-1,
                     rising=False
-                )
+                ).squeeze()
             )
             new_ds[var] = new_ds[var].assign_attrs(ds[var].attrs)
         else:
